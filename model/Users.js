@@ -1,20 +1,24 @@
 const connectionMysql=require('../config/mysqlConnection');
-
-const getUsersString='SELECT * FROM users';
+const {isExistInRedis,setUpRedis}=require('../helper/redisHelper');
 
 /**
  * Gets user table on database
  * @returns 
  */
 const getUsersList= async()=>{
-    
-    return await new Promise ((resolve,reject)=>{
-        connectionMysql.query(getUsersString,function(err,result){
-            if(err) reject(err);
-           
-            resolve (result);         
-        });
-    })
+    const getUsersString='SELECT * FROM users';
+
+    const isExist=await isExistInRedis('users');
+    if(!isExist){
+        return await new Promise ((resolve,reject)=>{
+            connectionMysql.query(getUsersString,async function(err,result){
+                if(err) reject(err);
+                await setUpRedis('users',result);
+                resolve (result);         
+            });
+        })
+    }
+    return isExist;
 };
 
 /**

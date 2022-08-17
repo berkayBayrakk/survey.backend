@@ -1,4 +1,5 @@
 const connectionMysql=require('../config/mysqlConnection');
+const {isExistInRedis,setUpRedis}=require('../helper/redisHelper');
 
 const createDepartmentSurvey=async(qureyString)=>{
     return await new Promise((resolve,reject)=>{
@@ -22,12 +23,17 @@ const deleteDepartmentsSurveysBySurveyId=async(id)=>{
 const getDepartmentsSurveys=async(departmentId)=>{
     const queryString=`select * from departments_surveys
     where department_id=${departmentId}`;
-    return await new Promise((resolve,reject)=>{
-        connectionMysql.query(queryString,function(error,result){
-            if(error) reject(error);
-            resolve(result);
-        })
-    })
+    const isExist=await isExistInRedis(`departmentssurveys?id${departmentId}`);
+    if(!isExist){
+        return await new Promise((resolve,reject)=>{
+            connectionMysql.query(queryString,async function(error,result){
+                if(error) reject(error);
+                await setUpRedis(`departmentssurveys?id${departmentId}`,result);
+                resolve(result);
+            });
+        });
+    };
+    return isExist;
 }
 
 

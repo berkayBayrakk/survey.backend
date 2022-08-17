@@ -1,4 +1,5 @@
 const connectionMysql=require('../config/mysqlConnection');
+const {isExistInRedis,setUpRedis}=require('../helper/redisHelper');
 
 /**
  * Creates new survey 
@@ -17,13 +18,18 @@ const createSurvey=async(surveyObj)=>{
 }
 
 const getSurveyById=async(id)=>{
-    const getSurveyString=`SELECT * FROM surveys WHERE id=${id}`;
-    return await new Promise((resolve,reject)=>{
-        connectionMysql.query(getSurveyString,function(error,result){
-            if(error) reject(error);
-            resolve(result);
+    const isExist=await isExistInRedis(`surveys?id:${id}`);
+    if(!isExist){
+        const getSurveyString=`SELECT * FROM surveys WHERE id=${id}`;
+        return await new Promise((resolve,reject)=>{
+            connectionMysql.query(getSurveyString,async function(error,result){
+                if(error) reject(error);
+                await setUpRedis(`surveys?id:${id}`,result);
+                resolve(result);
+            })
         })
-    })
+    }
+    return isExist;
 }
 
 const updateSurvey=async(survey)=>{

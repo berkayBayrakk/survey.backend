@@ -1,9 +1,9 @@
 const {getRolesList}= require('../../model/Roles');
 
-const getRoles=(req,res)=>{
+const getRoles=async(req,res)=>{
     try {
-        const roles=getRolesList();
-        res.json(JSON.stringify(roles));
+        const roles=await getRolesList();
+        res.json(roles);
     } catch (error) {
         res.status(500).json({"message":`${error}`});
     }
