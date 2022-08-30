@@ -1,5 +1,3 @@
-const {createQuestion}=require('../../model/Questions');
-const {createChoicesByQuestionId}=require('../../model/Choices');
 
 const createQuestionHandler=async(req,res)=>{
     const {title,surveyId,inputTypeId,choices}=req.body;
@@ -7,12 +5,12 @@ const createQuestionHandler=async(req,res)=>{
     const question={"title":title,"survey_id":surveyId,"input_type_id":inputTypeId};
 
     try {
-        const result=await createQuestion(question);
+        const result=await req.database.createQuestion(question);
         const questionId=result.insertId;
-        if(result){
-            const result=await createChoicesByQuestionId(questionId,choices);
-            if(result) return res.status(201).json({'Message':'Question added'});
-        } 
+        
+        const result1=await req.database.createChoicesByQuestionId(questionId,choices);
+        if(result1) return res.status(201).json({'Message':'Question added'});
+         
 
     } catch (error) {
         return res.status(500).json({"message":error});

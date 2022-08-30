@@ -1,9 +1,8 @@
 const jwt=require('jsonwebtoken');
-const {getUserByUsername}=require('../../model/Users');
 
 const refreshHandler=async(req,res)=>{
     const username=req.body.username;
-    const usersFind=await getUserByUsername(username);
+    const usersFind=await req.database.getUserByUsername(username);
     if(!usersFind) return res.sendStatus(401);
     const refresh_token=usersFind.refresh_token;
     if(!refresh_token) return res.sendStatus(403);

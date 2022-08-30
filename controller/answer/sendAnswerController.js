@@ -1,7 +1,3 @@
-const {getUserByUsername} =require('../../model/Users');
-const {getQuestionById} =require('../../model/Questions');
-const {getDepartmentsSurveys}=require('../../model/Departments_Surveys');
-const {createAnswer,getAnswers}=require('../../model/Answers');
 
 const sendAnswerHandler=async(req,res)=>{
     const {answer,question_id}=req.body;
@@ -11,10 +7,10 @@ const sendAnswerHandler=async(req,res)=>{
     if(!answer || !question_id) return res.status(400).json({'message':'Missing informations.'});
     let isValid=false;
     try {
-        const user=await getUserByUsername(username);
-        const questionObject=await getQuestionById(question_id);
-        const departmentsSurveys=await getDepartmentsSurveys(departmentId);
-        const answers=await getAnswers();
+        const user=await req.database.getUserByUsername(username);
+        const questionObject=await req.database.getQuestionById(question_id);
+        const departmentsSurveys=await req.database.getDepartmentsSurveys(departmentId);
+        const answers=await req.database.getAnswers();
 
         if(user &&questionObject&& departmentsSurveys && answers){
             let isExist=false;
@@ -29,7 +25,7 @@ const sendAnswerHandler=async(req,res)=>{
             if(!isValid) return res.sendStatus(403);
 
             const answerObj={answer,question_id,'user_id':user.id};
-            const result=await createAnswer(answerObj);
+            const result=await req.database.createAnswer(answerObj);
             if(result) res.status(201).json({'message':'Answer sended'});
         }
     } catch (error) {

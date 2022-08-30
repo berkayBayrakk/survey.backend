@@ -1,3 +1,4 @@
+const createDepartmentsSurveysString="INSERT INTO departments_surveys(department_id,survey_id) VALUES";
 
 /**
  * Creates string that query of create departments_surveys element with department ids and survey id
@@ -6,13 +7,11 @@
  */
 const createQueryString=(department_ids,survey_id)=>{   
     
-    let createDepartmentsSurveysString="INSERT INTO departments_surveys(department_id,survey_id) VALUES";
-        
-    department_ids.forEach(department_id => {
-        createDepartmentsSurveysString+=`(${department_id},${survey_id}),`
-    });
-    createDepartmentsSurveysString=createDepartmentsSurveysString.slice(0, -1);
-    return createDepartmentsSurveysString;
+    const finalString= department_ids.reduce((previusString,department_id)=>{
+        return `${previusString}(${department_id},${survey_id}),`;
+    },createDepartmentsSurveysString)
+
+    return finalString.slice(0, -1);
 }
 
 module.exports={createQueryString};

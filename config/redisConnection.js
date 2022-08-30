@@ -4,7 +4,7 @@ const client = Redis.createClient();
 
 const connectRedis=async()=>{
     client.connect().then((obj)=>{
-        console.log('Redis Connected')
+        
     })
 }
 

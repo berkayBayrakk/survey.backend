@@ -1,6 +1,3 @@
-const {getUserByUsername} =require('../../model/Users');
-const {getQuestionById} =require('../../model/Questions');
-const {getAnswers,updateAnswer}=require('../../model/Answers');
 
 const updateAnswerHandler=async(req,res)=>{
     const {answer,question_id}=req.body;
@@ -9,9 +6,9 @@ const updateAnswerHandler=async(req,res)=>{
     if(!answer || !question_id) return res.status(400).json({'message':'Missing informations.'});
 
     try {
-        const user=await getUserByUsername(username);
-        const questionObject=await getQuestionById(question_id);
-        const answers=await getAnswers();
+        const user=await req.database.getUserByUsername(username);
+        const questionObject=await req.database.getQuestionById(question_id);
+        const answers=await req.database.getAnswers();
 
         if(user &&questionObject&& answers){
             let isExist=false;
@@ -23,7 +20,7 @@ const updateAnswerHandler=async(req,res)=>{
                     };
             })
             if(!isExist) return res.status(400).json({'message':'You have not send answer for this question yet.'});
-            const result =await updateAnswer(id,answer);
+            const result =await req.database.updateAnswer(id,answer);
             if(result) res.json({'message':'Answer updated'});
         }
     } catch (error) {

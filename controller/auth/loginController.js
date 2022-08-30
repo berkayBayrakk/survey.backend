@@ -1,21 +1,21 @@
 const bcrypt=require('bcrypt');
 const usernameValidator=require('../../helper/usernameValidator');
-const {getUserByUsername,deleteUserById,createUser,updateUser}=require('../../model/Users');
 const jwt=require('jsonwebtoken');
 const loginHandler=async(req,res)=>{
 
     const{username,password}=req.body;
     if(!username || !password) return res.status(400).json({'message':'Username and password are required'});
     try {
-        const usernameExist=await usernameValidator(username);
+        const users=await req.database.getUsersList();
+        const usernameExist= usernameValidator(username,users);
         if(usernameExist) return res.sendStatus(401);
         
-        const userFinded=await getUserByUsername(username);
+        const userFinded=await req.database.getUserByUsername(username);
 
         //compare passwords
         const resultPswrd=await bcrypt.compare(password,userFinded.password);
         
-        if(!resultPswrd) return res.sendStatus(401);
+        if(!resultPswrd) return res.status(401).json({'message':'Password is not correct'});
         req.username=userFinded.username;
         const accessToken=jwt.sign(
             {
@@ -35,14 +35,12 @@ const loginHandler=async(req,res)=>{
             {expiresIn:'1d'}
         );
         //update database put refresh token
-
         const newUser={...userFinded,'refresh_token':refreshToken};
 
-        const result=await updateUser(newUser.id,newUser.refresh_token);
+        await req.database.updateUser(newUser.id,newUser.refresh_token);
+        res.json({accessToken});  
+        return
         
-        if(result){
-            res.json({accessToken});  
-        } 
     } catch (error) {
         res.status(500).json({"message":`${error}`});
     }
