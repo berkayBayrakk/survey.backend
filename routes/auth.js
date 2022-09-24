@@ -6,8 +6,7 @@ const loginTestHandler=require('../controller/auth/loginTestController');
 const logoutHandler=require('../controller/auth/logoutController');
 const refreshHandler=require('../controller/auth/refreshTokenController');
 const verifyJWT=require('../middleware/verifyJWT');
-
-authRoute.route('/register').post(registerHandler);
+authRoute.use('/register',registerHandler);
 authRoute.route('/login').post(loginHandler);
 authRoute.route('/refresh').get(refreshHandler);
 authRoute.route('/logout').get(verifyJWT,logoutHandler);
