@@ -33,4 +33,14 @@ const getQuestionById=async(id)=>{
     })
 }
 
-module.exports={createQuestion,getQuestionBySurvey,getQuestionById};
+const getQuestions = async()=>{
+    const queryString = "SELECT * FROM questions";
+    return await new Promise((resolve,reject)=>{
+        connectionMysql.query(queryString,function(error,result){
+            if(error) reject(error);
+            resolve(result);
+        })
+    })
+}
+
+module.exports={createQuestion,getQuestionBySurvey,getQuestionById,getQuestions};

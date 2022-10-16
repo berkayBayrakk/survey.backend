@@ -2,7 +2,7 @@ const connectionMysql=require('../config/mysqlConnection');
 const {isExistInRedis,setUpRedis}=require('../helper/redisHelper');
 
 /**
- * Gets user table on database
+ * Gets users table on database
  * @returns 
  */
 const getUsersList= async()=>{

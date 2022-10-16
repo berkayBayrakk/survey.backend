@@ -15,6 +15,24 @@ const createChoicesByQuestionId=async(questionId,choices)=>{
     })
 }
 
+const getChoiceBySingleQuestionId = async(questionId)=>{
+    const queryString=`SELECT * FROM choices WHERE question_id=${questionId}`;
+    const isExist = await isExistInRedis(`choice?questionId=${questionId}`);
+    
+    if(!isExist){
+        return await new Promise((resolve,reject)=>{
+            connectionMysql.query(queryString,async function(error,result){
+                if(error) reject(error)
+                await setUpRedis(`choice?questionId=${questionId}`,result)
+                resolve(result)
+            })
+        })
+    }
+    else{
+        return isExist
+    }
+}
+
 const getChoicesByQuestionId=async(questionIds)=>{
     let questionIdArray='(';
     questionIds.forEach(id=>{
@@ -36,4 +54,21 @@ const getChoicesByQuestionId=async(questionIds)=>{
     }
     return isExist;
 }
-module.exports={createChoicesByQuestionId,getChoicesByQuestionId};
+
+const getChoices = async()=>{
+    const queryString = "SELECT * FROM choices";
+    const result =await isExistInRedis('choices');
+    if(!result){
+        return await new Promise((resolve,reject)=>{
+            connectionMysql.query(queryString,async function(error,result){
+                if(error) reject(error);
+                await setUpRedis('choices',result);
+                resolve(result)
+            })
+        })
+    }
+    else{
+        return result;
+    }
+}
+module.exports={createChoicesByQuestionId,getChoicesByQuestionId,getChoices,getChoiceBySingleQuestionId};

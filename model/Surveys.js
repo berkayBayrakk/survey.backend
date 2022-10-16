@@ -17,6 +17,21 @@ const createSurvey=async(surveyObj)=>{
     })
 }
 
+const getSurveys = async()=>{
+    const isExist=await isExistInRedis(`surveys`);
+    if(!isExist){
+        const getSurveyString=`SELECT * FROM surveys`;
+        return await new Promise((resolve,reject)=>{
+            connectionMysql.query(getSurveyString,async function(error,result){
+                if(error) reject(error);
+                await setUpRedis(`surveys`,result);
+                resolve(result);
+            })
+        })
+    }
+    return isExist;
+}
+
 const getSurveyById=async(id)=>{
     const isExist=await isExistInRedis(`surveys?id:${id}`);
     if(!isExist){
@@ -55,4 +70,4 @@ const getSurveyByDepartmentId=async(department_id)=>{
     })
 }
 
-module.exports={createSurvey,getSurveyById,updateSurvey,getSurveyByDepartmentId};
+module.exports={createSurvey,getSurveyById,updateSurvey,getSurveyByDepartmentId,getSurveys};
