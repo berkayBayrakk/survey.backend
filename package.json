@@ -26,7 +26,6 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.1",
     "mysql": "^2.18.1",
-    "mysql2": "^2.3.3",
     "redis": "^4.2.0"
   }
 }

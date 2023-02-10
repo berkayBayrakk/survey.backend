@@ -1,9 +1,8 @@
-const mysql=require('mysql');
-const connectionMysql= mysql.createConnection({
-    host:process.env.HOST,
-    user:process.env.USER,
-    password:process.env.PASSWORD,
-    database:'survey_db'
-    
+const mysql = require("mysql");
+const connectionMysql = mysql.createConnection({
+  MYSQL_ROOT_PASSWORD: process.env.MYSQL_ROOT_PASSWORD,
+  user: 'root',
+  port:3306,
 });
-module.exports=connectionMysql;
+console.log(connectionMysql.state);
+module.exports = connectionMysql;

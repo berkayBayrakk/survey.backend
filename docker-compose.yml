@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+
+  survey-backend:
+    image: berkay/survey.backend
+    ports:
+      - 3000:3000
+    environment:
+      - DB_HOST= mysqldb
+      - REDIS_URL = redis://redis:6379
+
+  my-sql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD= ${MYSQL_ROOT_PASSWORD}
+      
+    restart: always
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - 3306:3306
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
