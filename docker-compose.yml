@@ -14,6 +14,8 @@ services:
     image: mysql
     environment:
       - MYSQL_ROOT_PASSWORD= ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
       
     restart: always
     ports:
@@ -23,3 +25,5 @@ services:
     image: redis
     ports:
       - 6379:6379
+  volumes:
+    mysql-data:
